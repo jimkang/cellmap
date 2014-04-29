@@ -1,10 +1,17 @@
-function createmap(opts) {
-  var map = {};
-  map.defaultCell = opts.defaultCell ? opts.defaultCell : null;
-  return map;
+function createCellMapmaker() {
+  function createMap(opts) {
+    function getCell(location) {
+    }
+
+    return {
+      defaultCell: opts.defaultCell ? opts.defaultCell : null,
+      getCell: getCell
+    };
+  }
+
+  return {
+    createMap: createMap
+  };
 }
 
-module.exports = {
-  createmap: createmap
-};
-
+module.exports = createCellMapmaker();
