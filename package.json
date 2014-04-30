@@ -4,7 +4,8 @@
   "description": "A quadtree-based cell map that tracks cell neighbors. For use with cellular automata.",
   "main": "cellmap.js",
   "scripts": {
-    "test": "mocha --ui tdd -R spec tests/cellmaptest.js"
+    "test": "mocha --ui tdd -R spec tests/cellmaptest.js",
+    "dtest": "mocha debug --ui tdd -R spec tests/cellmaptest.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,9 @@
     "mocha": "~1.18.2"
   },
   "dependencies": {
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "smash": "0.0.12",
+    "d3": "~3.4.6",
+    "uglifyjs": "~2.3.6"
   }
 }

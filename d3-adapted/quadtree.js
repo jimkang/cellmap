@@ -1,7 +1,6 @@
-import "../core/functor";
-import "../math/abs";
-import "geom";
-import "point";
+import "../node_modules/d3/src/core/functor";
+import "../node_modules/d3/src/math/abs";
+import "../node_modules/d3/src/geom/index";
 
 d3.geom.quadtree = function(points, x1, y1, x2, y2) {
   var x = d3_geom_pointX,
@@ -66,7 +65,7 @@ d3.geom.quadtree = function(points, x1, y1, x2, y2) {
     if (dx > dy) y2_ = y1_ + dx;
     else x2_ = x1_ + dy;
 
-    // Recursively inserts the specified point p at the node n or one of its
+    // Recursively inserts the specified point d at the node n or one of its
     // descendants. The bounds are defined by [x1, x2] and [y1, y2].
     function insert(n, d, x, y, x1, y1, x2, y2) {
       if (isNaN(x) || isNaN(y)) return; // ignore invalid points
@@ -79,18 +78,19 @@ d3.geom.quadtree = function(points, x1, y1, x2, y2) {
           // internal node while adding the new point to a child node. This
           // avoids infinite recursion.
           if ((abs(nx - x) + abs(ny - y)) < .01) {
-            insertChild(n, d, x, y, x1, y1, x2, y2);
+            return insertChild(n, d, x, y, x1, y1, x2, y2);
           } else {
             var nPoint = n.point;
             n.x = n.y = n.point = null;
             insertChild(n, nPoint, nx, ny, x1, y1, x2, y2);
-            insertChild(n, d, x, y, x1, y1, x2, y2);
+            return insertChild(n, d, x, y, x1, y1, x2, y2);
           }
         } else {
           n.x = x, n.y = y, n.point = d;
+          return n;
         }
       } else {
-        insertChild(n, d, x, y, x1, y1, x2, y2);
+        return insertChild(n, d, x, y, x1, y1, x2, y2);
       }
     }
 
@@ -111,14 +111,14 @@ d3.geom.quadtree = function(points, x1, y1, x2, y2) {
       // Update the bounds as we recurse.
       if (right) x1 = sx; else x2 = sx;
       if (bottom) y1 = sy; else y2 = sy;
-      insert(n, d, x, y, x1, y1, x2, y2);
+      return insert(n, d, x, y, x1, y1, x2, y2);
     }
 
     // Create the root node.
     var root = d3_geom_quadtreeNode(null);
 
     root.add = function(d) {
-      insert(root, d, +fx(d, ++i), +fy(d, i), x1_, y1_, x2_, y2_);
+      return insert(root, d, +fx(d, ++i), +fy(d, i), x1_, y1_, x2_, y2_);
     };
 
     root.remove = function(d) {
