@@ -5,25 +5,48 @@ var _ = require('lodash');
 var maps = {};
 var cells = {
   a: {
-    coords: [0, 0],
+    name: 'a',
     p: 0.4
   },
   b: {
-    coords: [1000, 1000],
+    name: 'b',
     p: 0.5
   },
   c: {
-    coords: [300, 500],
+    name: 'c',
     p: 0.1
   },
   d: {
-    coords: [234, 789],
+    name: 'd',
     p: 1.0
   },
   e: {
-    coords: [768, 384],
+    name: 'e',
     p: 0.6
   }
+};
+
+var cellCoords = {
+  a: [0, 0],
+  b: [1000, 1000],
+  c: [300, 500],
+  d: [234, 789],
+  e: [768, 384],
+};
+
+var overlaidCells = {
+  f: {
+    name: 'f',
+    p: 0.4
+  },
+  g: {
+    name: 'g',
+    p: 0.4
+  },
+  h: {
+    name: 'h',
+    p: 0.4
+  },
 };
 
 suite('Null-default map', function emptyMapSuite() {
@@ -45,8 +68,9 @@ suite('Null-default map', function emptyMapSuite() {
   test('addCell should add cells that can be got with getCell', 
     function testAddCellGetCell() {
       _.each(cells, function testAddingOneCell(cell) {
-        maps.nullMap.addCell(cell, cell.coords);
-        assert.deepEqual(maps.nullMap.getCell(cell.coords), cell);
+        var coords = cellCoords[cell.name];
+        maps.nullMap.addCell(cell, coords);
+        assert.deepEqual(maps.nullMap.getCell(coords), cell);
         // console.log('Got cell:', maps.nullMap.getCell(cell.coords));
       });
     }
@@ -63,12 +87,35 @@ suite('Null-default map', function emptyMapSuite() {
   );
 });
 
-suite('cellA default map', function cellAMapSuite() {
+suite('Cell X default map', function cellXMapSuite() {
+  var cellX = {
+    name: 'x',
+    p: 0.25
+  };
+  // test('A map with cell X as the default with should be created', 
+  //   function testMakingDefaultMap() {
+  //     maps.nullMap = cellmapmaker.createMap({
+  //       size: [1000, 1000],
+  //       defaultCell: {}
+  //     });
 
-
-  test('A map with cellA as the default with should be created');
+  //     assert.equal(typeof maps.nullMap, 'object');
+  //     assert.equal(maps.nullMap.defaultCell, null);
+  //   }
+  // );
   test('A request for a cell at 0,0 should return a copy of cellA');
   test('A request for a cell at 1000, 1000 should return null');
+
+  // test('adding cells at the same coords should kick previous occupants out', 
+  //   function testCellsAtSameSpot() {
+  //       maps.nullMap.addCell(overlaidCells.f, overlaidCells.f.coords);
+  //       assert.deepEqual(maps.nullMap.getCell(cell.coords), cell);
+        
+  //       // console.log('Got cell:', maps.nullMap.getCell(cell.coords));
+  //     });
+  //   }
+  // );
+
 });
 
 suite('Adding cells to null-default map', function cellAddSuite() {
