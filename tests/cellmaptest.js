@@ -49,14 +49,23 @@ suite('Null-default map', function emptyMapSuite() {
         assert.deepEqual(maps.nullMap.getCell(cell.coords), cell);
         // console.log('Got cell:', maps.nullMap.getCell(cell.coords));
       });
-
-      // TODO: Add several cells at same coords.
     }
   );
 
+  test('getCell should return null for coords without added cells', 
+    function testNullCellsAfterAdd() {
+      assert.equal(maps.nullMap.getCell([1, 1]), null);
+      assert.equal(maps.nullMap.getCell([999, 999]), null);
+      assert.equal(maps.nullMap.getCell([800, 400]), null);
+      assert.equal(maps.nullMap.getCell([235, 790]), null);
+      assert.equal(maps.nullMap.getCell([365, 93]), null);
+    }
+  );
 });
 
 suite('cellA default map', function cellAMapSuite() {
+
+
   test('A map with cellA as the default with should be created');
   test('A request for a cell at 0,0 should return a copy of cellA');
   test('A request for a cell at 1000, 1000 should return null');

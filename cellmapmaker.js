@@ -33,7 +33,9 @@ function createCellMapmaker() {
         targetNode = null;
         targetCoords = coords;
         quadtree.visit(matchCellNode);
-        cell = targetNode.cell;
+        if (targetNode) {
+          cell = targetNode.cell;
+        }
       }
       return cell;
     }
