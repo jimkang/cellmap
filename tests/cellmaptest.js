@@ -131,15 +131,22 @@ suite('Cell X default map', function cellXMapSuite() {
     }
   );
 
-  // test('adding cells at the same coords should kick previous occupants out', 
-  //   function testCellsAtSameSpot() {
-  //       maps.defaultMap.addCell(overlaidCells.f, overlaidCells.f.coords);
-  //       assert.deepEqual(maps.defaultMap.getCell(coords), cell);
-        
-  //       // console.log('Got cell:', maps.defaultMap.getCell(coords));
-  //     });
-  //   }
-  // );
+  test('verify that only one cell can be mapped per coordinate',
+    function testCellsAtSameSpot() {
+        var spot = [10, 700];
+        maps.defaultMap.addCell(overlaidCells.f, spot);
+        assert.deepEqual(maps.defaultMap.getCell(spot), overlaidCells.f);
+
+        maps.defaultMap.addCell(overlaidCells.g, spot);
+        assert.deepEqual(maps.defaultMap.getCell(spot), overlaidCells.g);        
+        assert.notDeepEqual(maps.defaultMap.getCell(spot), overlaidCells.f);
+
+        maps.defaultMap.addCell(overlaidCells.h, spot);
+        assert.notDeepEqual(maps.defaultMap.getCell(spot), overlaidCells.g);        
+        assert.notDeepEqual(maps.defaultMap.getCell(spot), overlaidCells.f);
+        assert.deepEqual(maps.defaultMap.getCell(spot), overlaidCells.h);
+    }
+  );
 
 });
 
