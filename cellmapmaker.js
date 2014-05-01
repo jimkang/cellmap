@@ -12,7 +12,6 @@ function createCellMapmaker() {
     function matchCellNode(n, x1, y1, x2, y2) {
       var targetX = targetCoords[0];
       var targetY = targetCoords[1];
-      debugger;
       if (n.leaf && targetX === n.point[0] && targetY === n.point[1]) {
         targetNode = n;
       }

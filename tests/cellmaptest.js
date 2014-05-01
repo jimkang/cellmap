@@ -111,36 +111,17 @@ suite('Cell X default map', function cellXMapSuite() {
     }
   );
 
-  // test('addCell should add cells that can be got with getCell', 
-  //   function testAddCellGetCell() {
-  //     _.each(cells, function testAddingOneCell(cell) {
-  //       var coords = cellCoords[cell.name];
-  //       maps.nullMap.addCell(cell, coords);
-  //       assert.deepEqual(maps.nullMap.getCell(coords), cell);
-  //       // console.log('Got cell:', maps.nullMap.getCell(cell.coords));
-  //     });
-  //   }
-  // );
+  test('addCell should add cells that can be got with getCell', 
+    function testAddCellGetCell() {
+      _.each(cells, function testAddingOneCell(cell) {
+        var coords = cellCoords[cell.name];
+        maps.defaultMap.addCell(cell, coords);
+        assert.deepEqual(maps.defaultMap.getCell(coords), cell);
+      });
+    }
+  );
 
-  // test('getCell should return null for coords without added cells', 
-  //   function testNullCellsAfterAdd() {
-  //     assert.equal(maps.nullMap.getCell([1, 1]), null);
-  //     assert.equal(maps.nullMap.getCell([999, 999]), null);
-  //     assert.equal(maps.nullMap.getCell([800, 400]), null);
-  //     assert.equal(maps.nullMap.getCell([235, 790]), null);
-  //     assert.equal(maps.nullMap.getCell([365, 93]), null);
-  //   }
-  // );
 
-  // test('adding cells at the same coords should kick previous occupants out', 
-  //   function testCellsAtSameSpot() {
-  //       maps.nullMap.addCell(overlaidCells.f, overlaidCells.f.coords);
-  //       assert.deepEqual(maps.nullMap.getCell(cell.coords), cell);
-        
-  //       // console.log('Got cell:', maps.nullMap.getCell(cell.coords));
-  //     });
-  //   }
-  // );
 
 });
 
