@@ -121,7 +121,25 @@ suite('Cell X default map', function cellXMapSuite() {
     }
   );
 
+  test('getCell should return cell X for coords without explicitly added cells', 
+    function testNullCellsAfterAdd() {
+      assert.deepEqual(maps.defaultMap.getCell([1, 1]), cellX);
+      assert.deepEqual(maps.defaultMap.getCell([999, 999]), cellX);
+      assert.deepEqual(maps.defaultMap.getCell([800, 400]), cellX);
+      assert.deepEqual(maps.defaultMap.getCell([235, 790]), cellX);
+      assert.deepEqual(maps.defaultMap.getCell([365, 93]), cellX);
+    }
+  );
 
+  // test('adding cells at the same coords should kick previous occupants out', 
+  //   function testCellsAtSameSpot() {
+  //       maps.defaultMap.addCell(overlaidCells.f, overlaidCells.f.coords);
+  //       assert.deepEqual(maps.defaultMap.getCell(coords), cell);
+        
+  //       // console.log('Got cell:', maps.defaultMap.getCell(coords));
+  //     });
+  //   }
+  // );
 
 });
 
