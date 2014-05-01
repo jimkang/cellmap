@@ -28,7 +28,7 @@ function createCellMapmaker() {
     }
 
     function getCell(coords) {
-      var cell = null;
+      var cell = opts.defaultCell;
       if (!quadtreeIsEmpty(quadtree)) {
         targetNode = null;
         targetCoords = coords;

@@ -103,8 +103,34 @@ suite('Cell X default map', function cellXMapSuite() {
       assert.equal(maps.defaultMap.defaultCell, cellX);
     }
   );
-  test('A request for a cell at 0,0 should return a copy of cellA');
-  test('A request for a cell at 1000, 1000 should return null');
+
+  // TODO: Cell effects should produce copies. Cells should be immutable.
+  test('getCell should return cellX if no points were added', 
+    function testDefaultCell() {
+      assert.deepEqual(maps.defaultMap.getCell([0, 0]), cellX);
+    }
+  );
+
+  // test('addCell should add cells that can be got with getCell', 
+  //   function testAddCellGetCell() {
+  //     _.each(cells, function testAddingOneCell(cell) {
+  //       var coords = cellCoords[cell.name];
+  //       maps.nullMap.addCell(cell, coords);
+  //       assert.deepEqual(maps.nullMap.getCell(coords), cell);
+  //       // console.log('Got cell:', maps.nullMap.getCell(cell.coords));
+  //     });
+  //   }
+  // );
+
+  // test('getCell should return null for coords without added cells', 
+  //   function testNullCellsAfterAdd() {
+  //     assert.equal(maps.nullMap.getCell([1, 1]), null);
+  //     assert.equal(maps.nullMap.getCell([999, 999]), null);
+  //     assert.equal(maps.nullMap.getCell([800, 400]), null);
+  //     assert.equal(maps.nullMap.getCell([235, 790]), null);
+  //     assert.equal(maps.nullMap.getCell([365, 93]), null);
+  //   }
+  // );
 
   // test('adding cells at the same coords should kick previous occupants out', 
   //   function testCellsAtSameSpot() {
