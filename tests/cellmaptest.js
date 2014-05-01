@@ -92,17 +92,17 @@ suite('Cell X default map', function cellXMapSuite() {
     name: 'x',
     p: 0.25
   };
-  // test('A map with cell X as the default with should be created', 
-  //   function testMakingDefaultMap() {
-  //     maps.nullMap = cellmapmaker.createMap({
-  //       size: [1000, 1000],
-  //       defaultCell: {}
-  //     });
+  test('A map with cell X as the default with should be created', 
+    function testMakingDefaultMap() {
+      maps.defaultMap = cellmapmaker.createMap({
+        size: [1000, 1000],
+        defaultCell: cellX
+      });
 
-  //     assert.equal(typeof maps.nullMap, 'object');
-  //     assert.equal(maps.nullMap.defaultCell, null);
-  //   }
-  // );
+      assert.equal(typeof maps.defaultMap, 'object');
+      assert.equal(maps.defaultMap.defaultCell, cellX);
+    }
+  );
   test('A request for a cell at 0,0 should return a copy of cellA');
   test('A request for a cell at 1000, 1000 should return null');
 
