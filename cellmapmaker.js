@@ -27,13 +27,20 @@ function createCellMapmaker() {
     }
 
     function getCell(coords) {
-      var cell = opts.defaultCell;
-      if (!quadtreeIsEmpty(quadtree)) {
-        targetNode = null;
-        targetCoords = coords;
-        quadtree.visit(matchCellNode);
-        if (targetNode) {
-          cell = targetNode.cell;
+      var cell = null;
+      var extent = quadtreeFactory.extent();
+
+      if (coords[0] > extent[0][0] && coords[0] < extent[1][0] &&
+        coords[1] > extent[0][1] && coords[1] < extent[1][1]) {
+
+        cell = opts.defaultCell;
+        if (!quadtreeIsEmpty(quadtree)) {
+          targetNode = null;
+          targetCoords = coords;
+          quadtree.visit(matchCellNode);
+          if (targetNode) {
+            cell = targetNode.point.cell;
+          }
         }
       }
       return cell;
@@ -41,13 +48,28 @@ function createCellMapmaker() {
 
     function addCell(cell, coords) {
       var node = quadtree.add(coords);
-      node.cell = cell;
+      // Adding the cell to the point object (which is technically an array)
+      // instead of directly to the node because nodes get destroyed and 
+      // recreated as the quadtree makes space for new points, but points 
+      // get moved along.
+      node.point.cell = cell;
+    }
+
+    function getNeighbors(coords) {
+      var neighborCoords = [
+        [coords[0] + 1, coords[1]],
+        [coords[0], coords[1] + 1],
+        [coords[0] - 1, coords[1]],
+        [coords[0], coords[1] - 1]
+      ];
+      return neighborCoords.map(getCell);
     }
 
     return {
       defaultCell: opts.defaultCell ? opts.defaultCell : null,
       getCell: getCell,
-      addCell: addCell
+      addCell: addCell,
+      getNeighbors: getNeighbors
     };
   }
 

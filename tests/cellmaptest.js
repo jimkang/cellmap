@@ -29,7 +29,7 @@ var cells = {
 var cellCoords = {
   a: [0, 0],
   b: [1000, 1000],
-  c: [300, 500],
+  c: [233, 789],
   d: [234, 789],
   e: [768, 384],
 };
@@ -148,12 +148,45 @@ suite('Cell X default map', function cellXMapSuite() {
     }
   );
 
-});
+  test('verify that getCell returns null for out-of-bounds coords', 
+    function testOutOfBoundGets() {
+      assert.equal(maps.defaultMap.getCell([-1, 1]), null);
+      assert.equal(maps.defaultMap.getCell([1, -1]), null);
+      assert.equal(maps.defaultMap.getCell([1001, 0]), null);
+      assert.equal(maps.defaultMap.getCell([0, 1001]), null);
+      assert.equal(maps.defaultMap.getCell([500, 100000]), null);
+    }
+  );
 
-suite('Adding cells to null-default map', function cellAddSuite() {
+  // How important is direction? Isn't direction emergent as a result of 
+  // naturally occurring flow?
+  test('verify basic neighbors method',
+    function testNeighborsMethod() {
+      assert.deepEqual(
+        maps.defaultMap.getNeighbors(cellCoords[cells.a.name]),
+        [cellX, cellX, null, null]
+      );
 
-});
+      assert.deepEqual(
+        maps.defaultMap.getNeighbors(cellCoords[cells.b.name]),
+        [null, null, cellX, cellX]
+      );
 
-suite('Adding cells to cellA-default map', function cellAddDefaultSuite() {
+      assert.deepEqual(
+        maps.defaultMap.getNeighbors(cellCoords[cells.c.name]),
+        [cells.d, cellX, cellX, cellX]
+      );
+
+      assert.deepEqual(
+        maps.defaultMap.getNeighbors(cellCoords[cells.d.name]),
+        [cellX, cellX, cells.c, cellX]
+      );
+
+      assert.deepEqual(
+        maps.defaultMap.getNeighbors(cellCoords[cells.e.name]),
+        [cellX, cellX, cellX, cellX]
+      );
+    }
+  );
 
 });
