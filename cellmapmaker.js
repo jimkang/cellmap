@@ -28,11 +28,8 @@ function createCellMapmaker() {
 
     function getCell(coords) {
       var cell = null;
-      var extent = quadtreeFactory.extent();
 
-      if (coords[0] > extent[0][0] && coords[0] < extent[1][0] &&
-        coords[1] > extent[0][1] && coords[1] < extent[1][1]) {
-
+      if (coordsAreWithinBounds(coords)) {
         cell = opts.defaultCell;
         if (!quadtreeIsEmpty(quadtree)) {
           targetNode = null;
@@ -44,6 +41,13 @@ function createCellMapmaker() {
         }
       }
       return cell;
+    }
+
+    function coordsAreWithinBounds(coords) {
+      var extent = quadtreeFactory.extent();
+
+      return (coords[0] > extent[0][0] && coords[0] < extent[1][0] &&
+        coords[1] > extent[0][1] && coords[1] < extent[1][1]);
     }
 
     function addCell(cell, coords) {
@@ -65,11 +69,19 @@ function createCellMapmaker() {
       return neighborCoords.map(getCell);
     }
 
+    function removeCell(coords) {
+      debugger;
+      if (coordsAreWithinBounds(coords)) {
+        quadtree.remove(coords);
+      }
+    }
+
     return {
       defaultCell: opts.defaultCell ? opts.defaultCell : null,
       getCell: getCell,
       addCell: addCell,
-      getNeighbors: getNeighbors
+      getNeighbors: getNeighbors,
+      removeCell: removeCell
     };
   }
 

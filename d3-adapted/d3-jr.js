@@ -1481,13 +1481,13 @@ d3.geom.quadtree = function(points, x1, y1, x2, y2) {
       var targetNode = null;
 
       function matchTargetNode(n, x1, y1, x2, y2) {
-        if (n.leaf && d.x === n.point.x && d.y === n.point.y) {
+        if (n.leaf && d[0] === n.point[0] && d[1] === n.point[1]) {
           targetNode = n;
         }
 
         // If the target is outside the rect, don't search the children of this 
         // node.
-        return targetNode || (d.x < x1 || d.x > x2 || d.y < y1 || d.y > y2);
+        return targetNode || (d[0] < x1 || d[0] > x2 || d[1] < y1 || d[1] > y2);
       }
 
       d3_geom_quadtreeVisit(matchTargetNode, root, x1_, y1_, x2_, y2_);

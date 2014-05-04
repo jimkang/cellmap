@@ -131,7 +131,7 @@ suite('Cell X default map', function cellXMapSuite() {
     }
   );
 
-  test('verify that only one cell can be mapped per coordinate',
+  test('Verify that only one cell can be mapped per coordinate',
     function testCellsAtSameSpot() {
         var spot = [10, 700];
         maps.defaultMap.addCell(overlaidCells.f, spot);
@@ -148,7 +148,7 @@ suite('Cell X default map', function cellXMapSuite() {
     }
   );
 
-  test('verify that getCell returns null for out-of-bounds coords', 
+  test('Verify that getCell returns null for out-of-bounds coords', 
     function testOutOfBoundGets() {
       assert.equal(maps.defaultMap.getCell([-1, 1]), null);
       assert.equal(maps.defaultMap.getCell([1, -1]), null);
@@ -160,7 +160,7 @@ suite('Cell X default map', function cellXMapSuite() {
 
   // How important is direction? Isn't direction emergent as a result of 
   // naturally occurring flow?
-  test('verify basic neighbors method',
+  test('Verify basic neighbors method',
     function testNeighborsMethod() {
       assert.deepEqual(
         maps.defaultMap.getNeighbors(cellCoords[cells.a.name]),
@@ -186,6 +186,30 @@ suite('Cell X default map', function cellXMapSuite() {
         maps.defaultMap.getNeighbors(cellCoords[cells.e.name]),
         [cellX, cellX, cellX, cellX]
       );
+    }
+  );
+
+  test('Verify that removeCell removes cells', 
+    function testRemoveCell() {
+      var eCoords = cellCoords[cells.e.name];
+      maps.defaultMap.removeCell(eCoords);
+      assert.deepEqual(maps.defaultMap.getCell(eCoords), cellX);
+
+      var dCoords = cellCoords[cells.d.name];
+      maps.defaultMap.removeCell(dCoords);
+      assert.deepEqual(maps.defaultMap.getCell(dCoords), cellX);
+
+      var cCoords = cellCoords[cells.c.name];
+      maps.defaultMap.removeCell(cCoords);
+      assert.deepEqual(maps.defaultMap.getCell(cCoords), cellX);
+
+      var bCoords = cellCoords[cells.b.name];
+      maps.defaultMap.removeCell(bCoords);
+      assert.deepEqual(maps.defaultMap.getCell(bCoords), cellX);
+
+      var aCoords = cellCoords[cells.a.name];
+      maps.defaultMap.removeCell(aCoords);
+      assert.deepEqual(maps.defaultMap.getCell(aCoords), cellX);
     }
   );
 
