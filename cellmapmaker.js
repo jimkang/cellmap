@@ -59,6 +59,12 @@ function createCellMapmaker() {
       node.point.cell = cell;
     }
 
+    function addCells(cellsAndCoords) {
+      cellsAndCoords.forEach(function addCellPack(cellPack) {
+        addCell(cellPack[0], cellPack[1]);
+      });
+    }
+
     function getNeighbors(coords) {
       var neighborCoords = [
         [coords[0] + 1, coords[1]],
@@ -80,6 +86,7 @@ function createCellMapmaker() {
       defaultCell: opts.defaultCell ? opts.defaultCell : null,
       getCell: getCell,
       addCell: addCell,
+      addCells: addCells,
       getNeighbors: getNeighbors,
       removeCell: removeCell
     };

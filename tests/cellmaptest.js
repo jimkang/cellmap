@@ -213,4 +213,20 @@ suite('Cell X default map', function cellXMapSuite() {
     }
   );
 
+  test('Verify that addCells adds a list of cells',
+    function testAddCells() {
+      maps.defaultMap.addCells([
+        [cells.a, cellCoords[cells.a.name]],
+        [cells.b, cellCoords[cells.b.name]],
+        [cells.c, cellCoords[cells.c.name]],
+        [cells.d, cellCoords[cells.d.name]],
+        [cells.e, cellCoords[cells.e.name]]
+      ]);
+
+      _.each(cells, function checkCell(cell) {
+        assert.deepEqual(maps.defaultMap.getCell(cellCoords[cell.name]), cell);
+      });
+    }
+  );
+
 });
