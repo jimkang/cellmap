@@ -1,5 +1,6 @@
 function createCellMapmaker() {
   var d3 = require('./d3-adapted/d3-jr');
+  var _ = require('lodash');
 
   function createMap(opts) {
     var quadtreeFactory = d3.geom.quadtree()
@@ -30,7 +31,10 @@ function createCellMapmaker() {
       var cell = null;
 
       if (coordsAreWithinBounds(coords)) {
-        cell = opts.defaultCell;
+        cell = {
+          d: opts.defaultCellData,
+          coords: coords
+        };
         if (!quadtreeIsEmpty(quadtree)) {
           targetNode = null;
           targetCoords = coords;
@@ -50,45 +54,65 @@ function createCellMapmaker() {
         coords[1] > extent[0][1] && coords[1] < extent[1][1]);
     }
 
-    function addCell(cell, coords) {
-      var node = quadtree.add(coords);
-      // Adding the cell to the point object (which is technically an array)
-      // instead of directly to the node because nodes get destroyed and 
-      // recreated as the quadtree makes space for new points, but points 
-      // get moved along.
-      node.point.cell = cell;
+    function setCell(cell) {
+      if (_.isEqual(cell.d, opts.defaultCellData)) {
+        // If it's the default cell, it doesn't need to be in the quadtree.
+        quadtree.remove(cell.coords);
+      }
+      else {
+        var node = quadtree.add(cell.coords.slice());
+        // Adding the cell to the point object (which is technically an array)
+        // instead of directly to the node because nodes get destroyed and 
+        // recreated as the quadtree makes space for new points, but points 
+        // get moved along.
+        node.point.cell = cell;
+      }
     }
 
-    function addCells(cellsAndCoords) {
-      cellsAndCoords.forEach(function addCellPack(cellPack) {
-        addCell(cellPack[0], cellPack[1]);
-      });
+    function setCells(cellsAndCoords) {
+      cellsAndCoords.forEach(setCell);
     }
 
     function getNeighbors(coords) {
       var neighborCoords = [
-        [coords[0] + 1, coords[1]],
-        [coords[0], coords[1] + 1],
-        [coords[0] - 1, coords[1]],
-        [coords[0], coords[1] - 1]
+        plusX(coords), plusY(coords), minusX(coords), minusY(coords)
       ];
       return neighborCoords.map(getCell);
     }
 
     function removeCell(coords) {
-      debugger;
       if (coordsAreWithinBounds(coords)) {
         quadtree.remove(coords);
       }
     }
 
+    function plusX(coords) {
+      return [coords[0] + 1, coords[1]];
+    }
+
+    function plusY(coords) {
+      return [coords[0], coords[1] + 1];
+    }
+
+    function minusX(coords) {
+      return [coords[0] - 1, coords[1]];
+    }
+
+    function minusY(coords) {
+      return [coords[0], coords[1] - 1];
+    }
+
     return {
-      defaultCell: opts.defaultCell ? opts.defaultCell : null,
+      defaultCellData: opts.defaultCellData ? opts.defaultCellData : null,
       getCell: getCell,
-      addCell: addCell,
-      addCells: addCells,
+      setCell: setCell,
+      setCells: setCells,
       getNeighbors: getNeighbors,
-      removeCell: removeCell
+      removeCell: removeCell,
+      plusX: plusX,
+      plusY: plusY,
+      minusX: minusX,
+      minusY: minusY
     };
   }
 

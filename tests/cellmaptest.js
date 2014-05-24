@@ -5,48 +5,40 @@ var _ = require('lodash');
 var maps = {};
 var cells = {
   a: {
-    name: 'a',
-    p: 0.4
+    d: {
+      name: 'a',
+      p: 0.4
+    },
+    coords: [0, 0],
   },
   b: {
-    name: 'b',
-    p: 0.5
+    d: {
+      name: 'b',
+      p: 0.5
+    },
+    coords: [1000, 1000]
   },
   c: {
-    name: 'c',
-    p: 0.1
+    d: {
+      name: 'c',
+      p: 0.1
+    },
+    coords: [233, 789]
   },
   d: {
-    name: 'd',
-    p: 1.0
+    d: {
+      name: 'd',
+      p: 1.0
+    },
+    coords: [234, 789]
   },
   e: {
-    name: 'e',
-    p: 0.6
+    d: {
+      name: 'e',
+      p: 0.6
+    },
+    coords: [768, 384]
   }
-};
-
-var cellCoords = {
-  a: [0, 0],
-  b: [1000, 1000],
-  c: [233, 789],
-  d: [234, 789],
-  e: [768, 384],
-};
-
-var overlaidCells = {
-  f: {
-    name: 'f',
-    p: 0.4
-  },
-  g: {
-    name: 'g',
-    p: 0.4
-  },
-  h: {
-    name: 'h',
-    p: 0.4
-  },
 };
 
 suite('Null-default map', function emptyMapSuite() {
@@ -56,39 +48,53 @@ suite('Null-default map', function emptyMapSuite() {
     });
 
     assert.equal(typeof maps.nullMap, 'object');
-    assert.equal(maps.nullMap.defaultCell, null);
+    assert.equal(maps.nullMap.defaultCellData, null);
   });
 
-  test('getCell should return null if no points were added', 
+  test('getCell should return a cell with null data if no points were added', 
     function testNullCell() {
-      assert.equal(maps.nullMap.getCell([0, 0]), null);
+      assert.equal(maps.nullMap.getCell([0, 0]).d, null);
     }
   );
 
-  test('addCell should add cells that can be got with getCell', 
-    function testAddCellGetCell() {
+  test('setCell should add cells that can be got with getCell', 
+    function testsetCellGetCell() {
       _.each(cells, function testAddingOneCell(cell) {
-        var coords = cellCoords[cell.name];
-        maps.nullMap.addCell(cell, coords);
-        assert.deepEqual(maps.nullMap.getCell(coords), cell);
+        maps.nullMap.setCell(cell);
+        assert.deepEqual(maps.nullMap.getCell(cell.coords), cell);
         // console.log('Got cell:', maps.nullMap.getCell(cell.coords));
       });
     }
   );
 
-  test('getCell should return null for coords without added cells', 
+  test('getCell should return null-data cells for coords without added cells', 
     function testNullCellsAfterAdd() {
-      assert.equal(maps.nullMap.getCell([1, 1]), null);
-      assert.equal(maps.nullMap.getCell([999, 999]), null);
-      assert.equal(maps.nullMap.getCell([800, 400]), null);
-      assert.equal(maps.nullMap.getCell([235, 790]), null);
-      assert.equal(maps.nullMap.getCell([365, 93]), null);
+      assert.equal(maps.nullMap.getCell([1, 1]).d, null);
+      assert.equal(maps.nullMap.getCell([999, 999]).d, null);
+      assert.equal(maps.nullMap.getCell([800, 400]).d, null);
+      assert.equal(maps.nullMap.getCell([235, 790]).d, null);
+      assert.equal(maps.nullMap.getCell([365, 93]).d, null);
     }
   );
+
+  // a: [0, 0],
+  // b: [1000, 1000],
+  // c: [233, 789],
+  // d: [234, 789],
+  // e: [768, 384],
+
+  // test('interestingCells should return only cells don\'t match the default',
+  //   function testInterestingCells() {
+  //     assert.deepEqual(
+  //       maps.nullMap.interestingCells(), 
+  //       [cells.a, cells.b, cells.c, cells.d, cells.e]
+  //     );
+  //   }
+  // );
 });
 
 suite('Cell X default map', function cellXMapSuite() {
-  var cellX = {
+  var cellXData = {
     name: 'x',
     p: 0.25
   };
@@ -96,57 +102,101 @@ suite('Cell X default map', function cellXMapSuite() {
     function testMakingDefaultMap() {
       maps.defaultMap = cellmapmaker.createMap({
         size: [1000, 1000],
-        defaultCell: cellX
+        defaultCellData: cellXData
       });
 
       assert.equal(typeof maps.defaultMap, 'object');
-      assert.equal(maps.defaultMap.defaultCell, cellX);
+      assert.equal(maps.defaultMap.defaultCellData, cellXData);
     }
   );
 
   // TODO: Cell effects should produce copies. Cells should be immutable.
   test('getCell should return cellX if no points were added', 
     function testDefaultCell() {
-      assert.deepEqual(maps.defaultMap.getCell([0, 0]), cellX);
+      assert.deepEqual(maps.defaultMap.getCell([0, 0]), {
+        d: cellXData,
+        coords: [0, 0]
+      });
     }
   );
 
-  test('addCell should add cells that can be got with getCell', 
-    function testAddCellGetCell() {
+  test('setCell should add cells that can be got with getCell', 
+    function testsetCellGetCell() {
       _.each(cells, function testAddingOneCell(cell) {
-        var coords = cellCoords[cell.name];
-        maps.defaultMap.addCell(cell, coords);
-        assert.deepEqual(maps.defaultMap.getCell(coords), cell);
+        maps.defaultMap.setCell(cell, cell.coords);
+        assert.deepEqual(maps.defaultMap.getCell(cell.coords), cell);
       });
     }
   );
 
   test('getCell should return cell X for coords without explicitly added cells', 
     function testNullCellsAfterAdd() {
-      assert.deepEqual(maps.defaultMap.getCell([1, 1]), cellX);
-      assert.deepEqual(maps.defaultMap.getCell([999, 999]), cellX);
-      assert.deepEqual(maps.defaultMap.getCell([800, 400]), cellX);
-      assert.deepEqual(maps.defaultMap.getCell([235, 790]), cellX);
-      assert.deepEqual(maps.defaultMap.getCell([365, 93]), cellX);
+      assert.deepEqual(maps.defaultMap.getCell([1, 1]), {
+        d: cellXData,
+        coords: [1, 1]
+      });
+      assert.deepEqual(maps.defaultMap.getCell([999, 999]), {
+        d: cellXData,
+        coords: [999, 999]
+      });
+      assert.deepEqual(maps.defaultMap.getCell([800, 400]), {
+        d: cellXData,
+        coords: [800, 400]
+      });
+      assert.deepEqual(maps.defaultMap.getCell([235, 790]), {
+        d: cellXData,
+        coords: [235, 790]
+      });
+      assert.deepEqual(maps.defaultMap.getCell([365, 93]), {
+        d: cellXData,
+        coords: [365, 93]
+      });
     }
   );
 
   test('Verify that only one cell can be mapped per coordinate',
     function testCellsAtSameSpot() {
         var spot = [10, 700];
-        maps.defaultMap.addCell(overlaidCells.f, spot);
+
+        var overlaidCells = {
+          f: {
+            d: {
+              name: 'f',
+              p: 0.4
+            },
+            coords: spot
+          },
+          g: {
+            d: {
+              name: 'g',
+              p: 0.4
+            },
+            coords: spot
+          },
+          h: {
+            d: {
+              name: 'h',
+              p: 0.4
+            },
+            coords: spot
+          }
+        };      
+        maps.defaultMap.setCell(overlaidCells.f);
         assert.deepEqual(maps.defaultMap.getCell(spot), overlaidCells.f);
 
-        maps.defaultMap.addCell(overlaidCells.g, spot);
+        maps.defaultMap.setCell(overlaidCells.g);
         assert.deepEqual(maps.defaultMap.getCell(spot), overlaidCells.g);        
         assert.notDeepEqual(maps.defaultMap.getCell(spot), overlaidCells.f);
 
-        maps.defaultMap.addCell(overlaidCells.h, spot);
+        maps.defaultMap.setCell(overlaidCells.h);
         assert.notDeepEqual(maps.defaultMap.getCell(spot), overlaidCells.g);        
         assert.notDeepEqual(maps.defaultMap.getCell(spot), overlaidCells.f);
         assert.deepEqual(maps.defaultMap.getCell(spot), overlaidCells.h);
     }
   );
+
+  // TODO: Test that a coord set to the default data is removed from the 
+  // quadtree.
 
   test('Verify that getCell returns null for out-of-bounds coords', 
     function testOutOfBoundGets() {
@@ -163,68 +213,145 @@ suite('Cell X default map', function cellXMapSuite() {
   test('Verify basic neighbors method',
     function testNeighborsMethod() {
       assert.deepEqual(
-        maps.defaultMap.getNeighbors(cellCoords[cells.a.name]),
-        [cellX, cellX, null, null]
+        maps.defaultMap.getNeighbors(cells.a.coords),
+        [
+          {
+            d: cellXData,
+            coords: maps.defaultMap.plusX(cells.a.coords),
+          }, 
+          {
+            d: cellXData,
+            coords: maps.defaultMap.plusY(cells.a.coords)
+          }, 
+          null,
+          null
+        ]
       );
 
       assert.deepEqual(
-        maps.defaultMap.getNeighbors(cellCoords[cells.b.name]),
-        [null, null, cellX, cellX]
+        maps.defaultMap.getNeighbors(cells.b.coords),
+        [
+          null, 
+          null,
+          {
+            d: cellXData,
+            coords: maps.defaultMap.minusX(cells.b.coords)
+          },
+          {
+            d: cellXData,
+            coords: maps.defaultMap.minusY(cells.b.coords)
+          }
+        ]
       );
 
       assert.deepEqual(
-        maps.defaultMap.getNeighbors(cellCoords[cells.c.name]),
-        [cells.d, cellX, cellX, cellX]
+        maps.defaultMap.getNeighbors(cells.c.coords),
+        [
+          cells.d, 
+          {
+            d: cellXData,
+            coords: maps.defaultMap.plusY(cells.c.coords)
+          }, 
+          {
+            d: cellXData,
+            coords: maps.defaultMap.minusX(cells.c.coords)
+          },
+          {
+            d: cellXData,
+            coords: maps.defaultMap.minusY(cells.c.coords)
+          }
+        ]
       );
 
       assert.deepEqual(
-        maps.defaultMap.getNeighbors(cellCoords[cells.d.name]),
-        [cellX, cellX, cells.c, cellX]
+        maps.defaultMap.getNeighbors(cells.d.coords),
+        [
+          {
+            d: cellXData,
+            coords: maps.defaultMap.plusX(cells.d.coords)
+          }, 
+          {
+            d: cellXData,
+            coords: maps.defaultMap.plusY(cells.d.coords)
+          }, 
+          cells.c,
+          {
+            d: cellXData,
+            coords: maps.defaultMap.minusY(cells.d.coords)
+          }
+        ]
       );
 
       assert.deepEqual(
-        maps.defaultMap.getNeighbors(cellCoords[cells.e.name]),
-        [cellX, cellX, cellX, cellX]
+        maps.defaultMap.getNeighbors(cells.e.coords),
+        [
+          {
+            d: cellXData,
+            coords: maps.defaultMap.plusX(cells.e.coords),
+          }, 
+          {
+            d: cellXData,
+            coords: maps.defaultMap.plusY(cells.e.coords)
+          }, 
+          {
+            d: cellXData,
+            coords: maps.defaultMap.minusX(cells.e.coords)
+          },
+          {
+            d: cellXData,
+            coords: maps.defaultMap.minusY(cells.e.coords)
+          }
+        ]
       );
     }
   );
 
   test('Verify that removeCell removes cells', 
     function testRemoveCell() {
-      var eCoords = cellCoords[cells.e.name];
-      maps.defaultMap.removeCell(eCoords);
-      assert.deepEqual(maps.defaultMap.getCell(eCoords), cellX);
+      maps.defaultMap.removeCell(cells.e.coords);
+      assert.deepEqual(maps.defaultMap.getCell(cells.e.coords), {
+        d: cellXData,
+        coords: cells.e.coords
+      });
 
-      var dCoords = cellCoords[cells.d.name];
-      maps.defaultMap.removeCell(dCoords);
-      assert.deepEqual(maps.defaultMap.getCell(dCoords), cellX);
+      maps.defaultMap.removeCell(cells.d.coords);
+      assert.deepEqual(maps.defaultMap.getCell(cells.d.coords), {
+        d: cellXData,
+        coords: cells.d.coords
+      });
 
-      var cCoords = cellCoords[cells.c.name];
-      maps.defaultMap.removeCell(cCoords);
-      assert.deepEqual(maps.defaultMap.getCell(cCoords), cellX);
+      maps.defaultMap.removeCell(cells.c.coords);
+      assert.deepEqual(maps.defaultMap.getCell(cells.c.coords), {
+        d: cellXData,
+        coords: cells.c.coords
+      });
 
-      var bCoords = cellCoords[cells.b.name];
-      maps.defaultMap.removeCell(bCoords);
-      assert.deepEqual(maps.defaultMap.getCell(bCoords), cellX);
+      maps.defaultMap.removeCell(cells.b.coords);
+      assert.deepEqual(maps.defaultMap.getCell(cells.b.coords), {
+        d: cellXData,
+        coords: cells.b.coords
+      });
 
-      var aCoords = cellCoords[cells.a.name];
-      maps.defaultMap.removeCell(aCoords);
-      assert.deepEqual(maps.defaultMap.getCell(aCoords), cellX);
+      maps.defaultMap.removeCell(cells.a.coords);
+      assert.deepEqual(maps.defaultMap.getCell(cells.a.coords), {
+        d: cellXData,
+        coords: cells.a.coords
+      });
     }
   );
 
-  test('Verify that addCells adds a list of cells',
-    function testAddCells() {
-      maps.defaultMap.addCells([
-        [cells.a, cellCoords[cells.a.name]],
-        [cells.b, cellCoords[cells.b.name]],
-        [cells.c, cellCoords[cells.c.name]],
-        [cells.d, cellCoords[cells.d.name]],
-        [cells.e, cellCoords[cells.e.name]]
+  test('Verify that setCells adds a list of cells',
+    function testsetCells() {
+      maps.defaultMap.setCells([
+        cells.a,
+        cells.b,
+        cells.c,
+        cells.d,
+        cells.e
       ]);
 
       _.each(cells, function checkCell(cell) {
-        assert.deepEqual(maps.defaultMap.getCell(cellCoords[cell.name]), cell);
+        assert.deepEqual(maps.defaultMap.getCell(cell.coords), cell);
       });
     }
   );
