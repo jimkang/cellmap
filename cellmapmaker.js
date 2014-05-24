@@ -102,6 +102,17 @@ function createCellMapmaker() {
       return [coords[0], coords[1] - 1];
     }
 
+    function pointsUsedForStorage() {
+      var pointCount = 0;
+      quadtree.visit(function countPoint(n, x1, y1, x2, y2) {
+        debugger;
+        if (n.leaf) {
+          pointCount += 1;
+        }
+      });
+      return pointCount;
+    }
+
     return {
       defaultCellData: opts.defaultCellData ? opts.defaultCellData : null,
       getCell: getCell,
@@ -112,7 +123,8 @@ function createCellMapmaker() {
       plusX: plusX,
       plusY: plusY,
       minusX: minusX,
-      minusY: minusY
+      minusY: minusY,
+      pointsUsedForStorage: pointsUsedForStorage
     };
   }
 

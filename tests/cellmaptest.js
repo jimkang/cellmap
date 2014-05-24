@@ -41,6 +41,32 @@ var cells = {
   }
 };
 
+var overlaySpot = [10, 700];
+
+var overlaidCells = {
+  f: {
+    d: {
+      name: 'f',
+      p: 0.4
+    },
+    coords: overlaySpot
+  },
+  g: {
+    d: {
+      name: 'g',
+      p: 0.4
+    },
+    coords: overlaySpot
+  },
+  h: {
+    d: {
+      name: 'h',
+      p: 0.4
+    },
+    coords: overlaySpot
+  }
+};    
+
 suite('Null-default map', function emptyMapSuite() {
   test('A null-default map should be created', function testMakingNullMap() {
     maps.nullMap = cellmapmaker.createMap({
@@ -155,43 +181,24 @@ suite('Cell X default map', function cellXMapSuite() {
   );
 
   test('Verify that only one cell can be mapped per coordinate',
-    function testCellsAtSameSpot() {
-        var spot = [10, 700];
-
-        var overlaidCells = {
-          f: {
-            d: {
-              name: 'f',
-              p: 0.4
-            },
-            coords: spot
-          },
-          g: {
-            d: {
-              name: 'g',
-              p: 0.4
-            },
-            coords: spot
-          },
-          h: {
-            d: {
-              name: 'h',
-              p: 0.4
-            },
-            coords: spot
-          }
-        };      
+    function testCellsAtSameSpot() {  
         maps.defaultMap.setCell(overlaidCells.f);
-        assert.deepEqual(maps.defaultMap.getCell(spot), overlaidCells.f);
+
+        assert.deepEqual(maps.defaultMap.getCell(overlaySpot), overlaidCells.f);
 
         maps.defaultMap.setCell(overlaidCells.g);
-        assert.deepEqual(maps.defaultMap.getCell(spot), overlaidCells.g);        
-        assert.notDeepEqual(maps.defaultMap.getCell(spot), overlaidCells.f);
+
+        assert.deepEqual(maps.defaultMap.getCell(overlaySpot), overlaidCells.g);        
+        assert.notDeepEqual(maps.defaultMap.getCell(overlaySpot), 
+          overlaidCells.f);
 
         maps.defaultMap.setCell(overlaidCells.h);
-        assert.notDeepEqual(maps.defaultMap.getCell(spot), overlaidCells.g);        
-        assert.notDeepEqual(maps.defaultMap.getCell(spot), overlaidCells.f);
-        assert.deepEqual(maps.defaultMap.getCell(spot), overlaidCells.h);
+
+        assert.notDeepEqual(maps.defaultMap.getCell(overlaySpot), 
+          overlaidCells.g);        
+        assert.notDeepEqual(maps.defaultMap.getCell(overlaySpot), 
+          overlaidCells.f);
+        assert.deepEqual(maps.defaultMap.getCell(overlaySpot), overlaidCells.h);
     }
   );
 
@@ -341,7 +348,7 @@ suite('Cell X default map', function cellXMapSuite() {
   );
 
   test('Verify that setCells adds a list of cells',
-    function testsetCells() {
+    function testSetCells() {
       maps.defaultMap.setCells([
         cells.a,
         cells.b,
@@ -353,6 +360,43 @@ suite('Cell X default map', function cellXMapSuite() {
       _.each(cells, function checkCell(cell) {
         assert.deepEqual(maps.defaultMap.getCell(cell.coords), cell);
       });
+    }
+  );
+
+  test('Verify that setting cells to the default cell data clears the quadtree',
+    function testSetCellsToDefault() {
+      maps.defaultMap.setCells([
+        {
+          d: cellXData,
+          coords: cells.a.coords
+        },
+        {
+          d: cellXData,
+          coords: cells.b.coords
+        },
+        {
+          d: cellXData,
+          coords: cells.c.coords
+        }
+      ]);
+
+      assert.equal(maps.defaultMap.pointsUsedForStorage(), 3);      
+
+      maps.defaultMap.setCells([
+        {
+          d: cellXData,
+          coords: cells.d.coords
+        },
+        {
+          d: cellXData,
+          coords: cells.e.coords
+        }
+      ]);
+
+      assert.equal(maps.defaultMap.pointsUsedForStorage(), 1);
+
+      maps.defaultMap.setCell({d: cellXData, coords: overlaySpot});
+      assert.equal(maps.defaultMap.pointsUsedForStorage(), 0);
     }
   );
 
