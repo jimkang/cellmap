@@ -1,6 +1,8 @@
 function createCellMapmaker() {
-  var d3 = require('./d3-adapted/d3-jr');
-  var _ = require('lodash');
+  if (typeof require === 'function') {
+    var d3 = require('./d3-adapted/d3-jr');
+    var _ = require('lodash');
+  }
 
   function createMap(opts) {
     var quadtreeFactory = d3.geom.quadtree()
@@ -133,4 +135,6 @@ function createCellMapmaker() {
   };
 }
 
-module.exports = createCellMapmaker();
+if (typeof module === 'object' && typeof module.exports === 'object') {
+  module.exports = createCellMapmaker();
+}
