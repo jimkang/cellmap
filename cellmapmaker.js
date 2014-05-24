@@ -82,6 +82,16 @@ function createCellMapmaker() {
       return neighborCoords.map(getCell);
     }
 
+    function interestingCells() {
+      var interesting = [];
+      quadtree.visit(function addCellFromNode(n, x1, y1, x2, y2) {
+        if (n.leaf) {
+          interesting.push(n.point.cell);
+        }
+      });
+      return interesting;
+    }
+
     function removeCell(coords) {
       if (coordsAreWithinBounds(coords)) {
         quadtree.remove(coords);
@@ -107,7 +117,6 @@ function createCellMapmaker() {
     function pointsUsedForStorage() {
       var pointCount = 0;
       quadtree.visit(function countPoint(n, x1, y1, x2, y2) {
-        debugger;
         if (n.leaf) {
           pointCount += 1;
         }
@@ -121,6 +130,7 @@ function createCellMapmaker() {
       setCell: setCell,
       setCells: setCells,
       getNeighbors: getNeighbors,
+      interestingCells: interestingCells,
       removeCell: removeCell,
       plusX: plusX,
       plusY: plusY,

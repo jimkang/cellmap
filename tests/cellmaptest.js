@@ -109,14 +109,14 @@ suite('Null-default map', function emptyMapSuite() {
   // d: [234, 789],
   // e: [768, 384],
 
-  // test('interestingCells should return only cells don\'t match the default',
-  //   function testInterestingCells() {
-  //     assert.deepEqual(
-  //       maps.nullMap.interestingCells(), 
-  //       [cells.a, cells.b, cells.c, cells.d, cells.e]
-  //     );
-  //   }
-  // );
+  test('interestingCells should return only cells that don\'t match the default',
+    function testInterestingCells() {
+      assert.deepEqual(
+        maps.nullMap.interestingCells(), 
+        [cells.a, cells.e, cells.c, cells.d, cells.b]
+      );
+    }
+  );
 });
 
 suite('Cell X default map', function cellXMapSuite() {
@@ -201,9 +201,6 @@ suite('Cell X default map', function cellXMapSuite() {
         assert.deepEqual(maps.defaultMap.getCell(overlaySpot), overlaidCells.h);
     }
   );
-
-  // TODO: Test that a coord set to the default data is removed from the 
-  // quadtree.
 
   test('Verify that getCell returns null for out-of-bounds coords', 
     function testOutOfBoundGets() {
