@@ -117,6 +117,17 @@ suite('Null-default map', function emptyMapSuite() {
       );
     }
   );
+
+  test('filterCells should return cells with p of at least 0.5 only', 
+    function testFilterCells() {
+      assert.deepEqual(
+        maps.nullMap.filterCells(function gteHalf(cell) {
+          return cell.d.p >= 0.5;
+        }),
+        [cells.e, cells.d, cells.b]
+      )
+    }
+  );
 });
 
 suite('Cell X default map', function cellXMapSuite() {

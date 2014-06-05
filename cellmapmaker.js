@@ -82,14 +82,22 @@ function createCellMapmaker() {
       return neighborCoords.map(getCell);
     }
 
+    function alwaysTrue() {
+      return true;
+    }
+
     function interestingCells() {
-      var interesting = [];
+      return filterCells(alwaysTrue);
+    }
+
+    function filterCells(shouldInclude) {
+      var filtered = [];
       quadtree.visit(function addCellFromNode(n, x1, y1, x2, y2) {
-        if (n.leaf) {
-          interesting.push(n.point.cell);
+        if (n.leaf && shouldInclude(n.point.cell)) {
+          filtered.push(n.point.cell);
         }
       });
-      return interesting;
+      return filtered;
     }
 
     function removeCell(coords) {
@@ -131,6 +139,7 @@ function createCellMapmaker() {
       setCells: setCells,
       getNeighbors: getNeighbors,
       interestingCells: interestingCells,
+      filterCells: filterCells,
       removeCell: removeCell,
       plusX: plusX,
       plusY: plusY,
