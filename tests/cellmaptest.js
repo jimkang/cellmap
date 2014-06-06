@@ -74,7 +74,7 @@ suite('Null-default map', function emptyMapSuite() {
     });
 
     assert.equal(typeof maps.nullMap, 'object');
-    assert.equal(maps.nullMap.defaultCellData, null);
+    assert.equal(maps.nullMap.createDefaultCell().d, null);
   });
 
   test('getCell should return a cell with null data if no points were added', 
@@ -137,23 +137,39 @@ suite('Cell X default map', function cellXMapSuite() {
   };
   test('A map with cell X as the default with should be created', 
     function testMakingDefaultMap() {
+      var dataCopy = _.cloneDeep(cellXData);
       maps.defaultMap = cellmapmaker.createMap({
         size: [1000, 1000],
-        defaultCellData: cellXData
+        createDefaultCell: function createCellX(coords) {
+          return {
+            d: dataCopy,
+            coords: _.cloneDeep(coords)
+          };
+        },
+        isDefault: function matchesCellX(cell) {
+          return cellXData.name === cell.d.name && cellXData.p === cell.d.p;
+        }
       });
 
       assert.equal(typeof maps.defaultMap, 'object');
-      assert.equal(maps.defaultMap.defaultCellData, cellXData);
+      assert.ok(maps.defaultMap.isDefault(maps.defaultMap.createDefaultCell()));
     }
   );
 
-  // TODO: Cell effects should produce copies. Cells should be immutable.
-  test('getCell should return cellX if no points were added', 
+  test('getCell should return a cell matching the original cellX even if cellX is altered', 
+    // This is partly a test of createCellX, rather than cellmap, but it 
+    // establishes that the provided createDefaultCell MUST ensure that it is 
+    // returning a copy.
     function testDefaultCell() {
+      var cellXDataCopy = _.cloneDeep(cellXData);
+      cellXData.p = 999;
+
       assert.deepEqual(maps.defaultMap.getCell([0, 0]), {
-        d: cellXData,
+        d: cellXDataCopy,
         coords: [0, 0]
       });
+
+      cellXData = cellXDataCopy;
     }
   );
 

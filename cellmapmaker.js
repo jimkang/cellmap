@@ -12,6 +12,15 @@ function createCellMapmaker() {
     var targetNode;
     var targetCoords;
 
+    if (!opts.createDefaultCell) {
+      opts.createDefaultCell = function createNullDataCell(coords) {
+        return {
+          d: null,
+          coords: _.cloneDeep(coords)
+        };
+      };
+    }
+
     function matchCellNode(n, x1, y1, x2, y2) {
       var targetX = targetCoords[0];
       var targetY = targetCoords[1];
@@ -33,10 +42,6 @@ function createCellMapmaker() {
       var cell = null;
 
       if (coordsAreWithinBounds(coords)) {
-        cell = {
-          d: opts.defaultCellData,
-          coords: coords
-        };
         if (!quadtreeIsEmpty(quadtree)) {
           targetNode = null;
           targetCoords = coords;
@@ -44,6 +49,9 @@ function createCellMapmaker() {
           if (targetNode) {
             cell = targetNode.point.cell;
           }
+        }
+        if (!cell && opts.createDefaultCell) {
+          cell = opts.createDefaultCell(coords);
         }
       }
       return cell;
@@ -57,8 +65,8 @@ function createCellMapmaker() {
     }
 
     function setCell(cell) {
-      if (_.isEqual(cell.d, opts.defaultCellData)) {
-        // If it's the default cell, it doesn't need to be in the quadtree.
+      if (opts.isDefault && opts.isDefault(cell)) {
+        // If it's a default cell, it doesn't need to be in the quadtree.
         quadtree.remove(cell.coords);
       }
       else {
@@ -133,7 +141,6 @@ function createCellMapmaker() {
     }
 
     return {
-      defaultCellData: opts.defaultCellData ? opts.defaultCellData : null,
       getCell: getCell,
       setCell: setCell,
       setCells: setCells,
@@ -145,7 +152,9 @@ function createCellMapmaker() {
       plusY: plusY,
       minusX: minusX,
       minusY: minusY,
-      pointsUsedForStorage: pointsUsedForStorage
+      pointsUsedForStorage: pointsUsedForStorage,
+      createDefaultCell: opts.createDefaultCell,
+      isDefault: opts.isDefault
     };
   }
 
