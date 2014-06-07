@@ -98,14 +98,22 @@ function createCellMapmaker() {
       return filterCells(alwaysTrue);
     }
 
+    // These are here so that addCellFromNode can be defined outside of 
+    // filterCells, which results in about 1/3 of the ticks.
+    var filtered = [];
+    var currentFilterFunction;
+
     function filterCells(shouldInclude) {
-      var filtered = [];
-      quadtree.visit(function addCellFromNode(n, x1, y1, x2, y2) {
-        if (n.leaf && shouldInclude(n.point.cell)) {
-          filtered.push(n.point.cell);
-        }
-      });
+      filtered.length = 0;
+      currentFilterFunction = shouldInclude;
+      quadtree.visit(addCellFromNode);
       return filtered;
+    }
+
+    function addCellFromNode(n, x1, y1, x2, y2) {
+      if (n.leaf && currentFilterFunction(n.point.cell)) {
+        filtered.push(n.point.cell);
+      }
     }
 
     function removeCell(coords) {
