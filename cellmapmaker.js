@@ -6,11 +6,86 @@ function createCellMapmaker() {
 
   function createMap(opts) {
     var visitFns = [
-      ['matchCellNode', matchCellNode],
-      ['lookForInteresting', lookForInteresting],
-      ['countPoint', countPoint],
-      ['lookForNeedsUpdate', lookForNeedsUpdate],
-      ['lookForNonZeroNewP', lookForNonZeroNewP]
+      ['matchCellNode', function visit_matchCellNode(node, x1, y1, x2, y2) {
+        var targetX = targetCoords[0];
+        var targetY = targetCoords[1];
+        if (node.leaf && targetX === node.point[0] && targetY === node.point[1]) {
+          targetNode = node;
+        }
+
+        // If the target is outside the rect, don't search the children of this 
+        // node.
+        var stopSearching = targetNode || 
+          (targetX < x1 || targetX > x2 || targetY < y1 || targetY > y2)
+
+        if (!stopSearching) {
+          var sx = (x1 + x2) * 0.5,
+              sy = (y1 + y2) * 0.5,
+              children = node.nodes;
+          if (children[0]) visit_matchCellNode(children[0], x1, y1, sx, sy);
+          if (children[1]) visit_matchCellNode(children[1], sx, y1, x2, sy);
+          if (children[2]) visit_matchCellNode(children[2], x1, sy, sx, y2);
+          if (children[3]) visit_matchCellNode(children[3], sx, sy, x2, y2);
+        }
+      }],
+      ['lookForInteresting', function visit_lookForInteresting(node, x1, y1, x2, y2) {
+        if (node.leaf) {
+          interesting.push(node.point.cell)
+        }
+
+        if (true) {
+          var sx = (x1 + x2) * 0.5,
+              sy = (y1 + y2) * 0.5,
+              children = node.nodes;
+          if (children[0]) visit_lookForInteresting(children[0], x1, y1, sx, sy);
+          if (children[1]) visit_lookForInteresting(children[1], sx, y1, x2, sy);
+          if (children[2]) visit_lookForInteresting(children[2], x1, sy, sx, y2);
+          if (children[3]) visit_lookForInteresting(children[3], sx, sy, x2, y2);
+        }
+      }],
+      ['countPoint', function visit_countPoint(node, x1, y1, x2, y2) {
+        if (node.leaf) {
+          pointCount += 1;
+        }
+        if (true) {
+          var sx = (x1 + x2) * 0.5,
+              sy = (y1 + y2) * 0.5,
+              children = node.nodes;
+          if (children[0]) visit_countPoint(children[0], x1, y1, sx, sy);
+          if (children[1]) visit_countPoint(children[1], sx, y1, x2, sy);
+          if (children[2]) visit_countPoint(children[2], x1, sy, sx, y2);
+          if (children[3]) visit_countPoint(children[3], sx, sy, x2, y2);
+        }
+      }],
+      ['lookForNeedsUpdate', function visit_lookForNeedsUpdate(node, x1, y1, x2, y2) {
+        if (node.leaf && node.point.cell.needsUpdate) {
+          updateNeeders.push(node.point.cell)
+        }
+        if (true) {
+          var sx = (x1 + x2) * 0.5,
+              sy = (y1 + y2) * 0.5,
+              children = node.nodes;
+          if (children[0]) visit_lookForNeedsUpdate(children[0], x1, y1, sx, sy);
+          if (children[1]) visit_lookForNeedsUpdate(children[1], sx, y1, x2, sy);
+          if (children[2]) visit_lookForNeedsUpdate(children[2], x1, sy, sx, y2);
+          if (children[3]) visit_lookForNeedsUpdate(children[3], sx, sy, x2, y2);
+        }
+      }],
+      ['lookForNonZeroNewP', function visit_lookForNonZeroNewP(node, x1, y1, x2, y2) {
+        if (node.leaf && node.point.cell.nextD.p !== 0) {
+          nonZeroNewP.push(node.point.cell)
+        }
+
+        if (true) {
+          var sx = (x1 + x2) * 0.5,
+              sy = (y1 + y2) * 0.5,
+              children = node.nodes;
+          if (children[0]) visit_lookForNonZeroNewP(children[0], x1, y1, sx, sy);
+          if (children[1]) visit_lookForNonZeroNewP(children[1], sx, y1, x2, sy);
+          if (children[2]) visit_lookForNonZeroNewP(children[2], x1, sy, sx, y2);
+          if (children[3]) visit_lookForNonZeroNewP(children[3], sx, sy, x2, y2);
+        }
+      }]
     ];
 
     // if (opts.filterFunctions) {
@@ -225,6 +300,22 @@ function createCellMapmaker() {
       if (n.leaf) {
         pointCount += 1;
       }
+    }
+
+    // TODO: Unroll this into functions that do not generate a function but 
+    // instead use a hardcoded nodeCheckFn.
+    function makeVisitFunction(nodeCheckFn) {
+      return function customVisit(node, x1, y1, x2, y2) {
+        if (!nodeCheckFn(node, x1, y1, x2, y2)) {
+          var sx = (x1 + x2) * 0.5,
+              sy = (y1 + y2) * 0.5,
+              children = node.nodes;
+          if (children[0]) customVisit(children[0], x1, y1, sx, sy);
+          if (children[1]) customVisit(children[1], sx, y1, x2, sy);
+          if (children[2]) customVisit(children[2], x1, sy, sx, y2);
+          if (children[3]) customVisit(children[3], sx, sy, x2, y2);
+        }
+      };
     }
 
     return {

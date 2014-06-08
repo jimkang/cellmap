@@ -1548,19 +1548,19 @@ d3.geom.quadtree = function(points, x1, y1, x2, y2) {
   var customVisitFunctions = [];
 
   function addVisitFn(nameAndFn) {
-    var fn = nameAndFn[1];
-    function customVisit(node, x1, y1, x2, y2) {
-      if (!fn(node, x1, y1, x2, y2)) {
-        var sx = (x1 + x2) * 0.5,
-            sy = (y1 + y2) * 0.5,
-            children = node.nodes;
-        if (children[0]) customVisit(children[0], x1, y1, sx, sy);
-        if (children[1]) customVisit(children[1], sx, y1, x2, sy);
-        if (children[2]) customVisit(children[2], x1, sy, sx, y2);
-        if (children[3]) customVisit(children[3], sx, sy, x2, y2);
-      }
-    }
-    customVisitFunctions.push(['visit_' + nameAndFn[0], customVisit]);
+    // var fn = nameAndFn[1];
+    // function customVisit(node, x1, y1, x2, y2) {
+    //   if (!fn(node, x1, y1, x2, y2)) {
+    //     var sx = (x1 + x2) * 0.5,
+    //         sy = (y1 + y2) * 0.5,
+    //         children = node.nodes;
+    //     if (children[0]) customVisit(children[0], x1, y1, sx, sy);
+    //     if (children[1]) customVisit(children[1], sx, y1, x2, sy);
+    //     if (children[2]) customVisit(children[2], x1, sy, sx, y2);
+    //     if (children[3]) customVisit(children[3], sx, sy, x2, y2);
+    //   }
+    // }
+    customVisitFunctions.push(['visit_' + nameAndFn[0], nameAndFn[1]]);
   }
 
   quadtree.visitFunctions = function(_) {
