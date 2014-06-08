@@ -1,3 +1,38 @@
+function NonZeroNewPSearcher() {
+  this.foundCells = [];
+}
+
+NonZeroNewPSearcher.prototype.search = function search(node, x1, y1, x2, y2) {
+  this.foundCells.length = 0;
+  return this.visitQuadTree(node, x1, y1, x2, y2);
+};
+
+NonZeroNewPSearcher.prototype.visitQuadTree = 
+function visitQuadTree(node, x1, y1, x2, y2) {
+  if (node.leaf && node.point.cell.nextD.p !== 0) {
+    this.foundCells.push(node.point.cell);
+  }
+
+  var sx = (x1 + x2) * 0.5;
+  var sy = (y1 + y2) * 0.5;
+  var children = node.nodes;
+
+  if (children[0]) {
+    this.visitQuadTree(children[0], x1, y1, sx, sy);
+  }
+  if (children[1]) {
+    this.visitQuadTree(children[1], x1, y1, sx, sy);
+  }
+  if (children[2]) {
+    this.visitQuadTree(children[2], x1, y1, sx, sy)
+  }
+  if (children[3]) {
+    this.visitQuadTree(children[3], x1, y1, sx, sy)
+  }
+
+  return this.foundCells;
+};
+
 function createCellMapmaker() {
   if (typeof require === 'function') {
     var d3 = require('./d3-adapted/d3-jr');
@@ -71,21 +106,7 @@ function createCellMapmaker() {
           if (children[3]) visit_lookForNeedsUpdate(children[3], sx, sy, x2, y2);
         }
       }],
-      ['lookForNonZeroNewP', function visit_lookForNonZeroNewP(node, x1, y1, x2, y2) {
-        if (node.leaf && node.point.cell.nextD.p !== 0) {
-          nonZeroNewP.push(node.point.cell)
-        }
-
-        if (true) {
-          var sx = (x1 + x2) * 0.5,
-              sy = (y1 + y2) * 0.5,
-              children = node.nodes;
-          if (children[0]) visit_lookForNonZeroNewP(children[0], x1, y1, sx, sy);
-          if (children[1]) visit_lookForNonZeroNewP(children[1], sx, y1, x2, sy);
-          if (children[2]) visit_lookForNonZeroNewP(children[2], x1, sy, sx, y2);
-          if (children[3]) visit_lookForNonZeroNewP(children[3], sx, sy, x2, y2);
-        }
-      }]
+      // ['lookForNonZeroNewP', visit_lookForNonZeroNewP]
     ];
 
     // if (opts.filterFunctions) {
@@ -103,10 +124,15 @@ function createCellMapmaker() {
     //       customFilterVisit
     //     ]);
     //   });
-    // }
+    // }    
+
+    var quadtreeExtents = [
+      [-1.01, -1.01], 
+      [1.0 * opts.size[0] + 1.0, 1.0 * opts.size[1] + 1.0]
+    ];
 
     var quadtreeFactory = d3.geom.quadtree()
-      .extent([[-1, -1], [opts.size[0] + 1, opts.size[1] + 1]])
+      .extent(quadtreeExtents)
       .visitFunctions(visitFns);
 
     var quadtree = quadtreeFactory([]);
@@ -215,20 +241,21 @@ function createCellMapmaker() {
     }
 
 
-    var nonZeroNewP = [];
-    function lookForNonZeroNewP(n, x1, y1, x2, y2) {
-      if (n.leaf && n.point.cell.nextD.p !== 0) {
-        nonZeroNewP.push(n.point.cell)
-      }
+    // function lookForNonZeroNewP(n, x1, y1, x2, y2) {
+    //   if (n.leaf && n.point.cell.nextD.p !== 0) {
+    //     nonZeroNewP.push(n.point.cell)
+    //   }
 
-      return false;
-    }
+    //   return false;
+    // }
+    var nonZeroNewPSearcher = new NonZeroNewPSearcher();
+
     function nonZeroNewPCells() {
-      nonZeroNewP.length = 0;
-      quadtree.visit_lookForNonZeroNewP();
-      return nonZeroNewP;
+      return nonZeroNewPSearcher.search(quadtree, 
+        quadtreeExtents[0][0], quadtreeExtents[0][1], 
+        quadtreeExtents[1][0], quadtreeExtents[1][1]
+      );
     }
-
 
     var updateNeeders = [];
     function lookForNeedsUpdate(n, x1, y1, x2, y2) {
