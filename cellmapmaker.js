@@ -5,12 +5,36 @@ function createCellMapmaker() {
   }
 
   function createMap(opts) {
-    var quadtreeFactory = d3.geom.quadtree()
-      .extent([[-1, -1], [opts.size[0] + 1, opts.size[1] + 1]]);
-    var quadtree = quadtreeFactory([]);
+    var visitFns = [
+      ['matchCellNode', matchCellNode],
+      ['lookForInteresting', lookForInteresting],
+      ['countPoint', countPoint],
+      ['lookForNeedsUpdate', lookForNeedsUpdate],
+      ['lookForNonZeroNewP', lookForNonZeroNewP]
+    ];
 
-    var targetNode;
-    var targetCoords;
+    // if (opts.filterFunctions) {
+    //   opts.filterFunctions.each(function setUpCustomVisitFunction(nameAndFn) {
+    //     var filtered = [];
+    //     function customFilterVisit(n, x1, y1, x2, y2) {
+    //       if (n.leaf && nameAndFn[1](n.point.cell)) {
+    //         filtered.push(n.point.cell);
+    //       }
+    //       return true;
+    //     }
+
+    //     visitFns.push([
+    //       nameAndFn[0], 
+    //       customFilterVisit
+    //     ]);
+    //   });
+    // }
+
+    var quadtreeFactory = d3.geom.quadtree()
+      .extent([[-1, -1], [opts.size[0] + 1, opts.size[1] + 1]])
+      .visitFunctions(visitFns);
+
+    var quadtree = quadtreeFactory([]);
 
     if (!opts.createDefaultCell) {
       opts.createDefaultCell = function createNullDataCell(coords) {
@@ -20,6 +44,9 @@ function createCellMapmaker() {
         };
       };
     }
+
+    var targetNode;
+    var targetCoords;
 
     function matchCellNode(n, x1, y1, x2, y2) {
       var targetX = targetCoords[0];
@@ -45,7 +72,7 @@ function createCellMapmaker() {
         if (!quadtreeIsEmpty(quadtree)) {
           targetNode = null;
           targetCoords = coords;
-          quadtree.visit(matchCellNode);
+          quadtree.visit_matchCellNode();
           if (targetNode) {
             cell = targetNode.point.cell;
           }
@@ -94,19 +121,63 @@ function createCellMapmaker() {
       return true;
     }
 
-    function interestingCells() {
-      return filterCells(alwaysTrue);
+    var interesting = [];
+    function lookForInteresting(n, x1, y1, x2, y2) {
+      if (!n) {
+        debugger;
+      }
+      if (n.leaf) {
+        interesting.push(n.point.cell)
+      }
+
+      return false;
     }
 
+    function interestingCells() {
+      interesting.length = 0;
+      quadtree.visit_lookForInteresting();
+      return interesting;
+    }
+
+
+    var nonZeroNewP = [];
+    function lookForNonZeroNewP(n, x1, y1, x2, y2) {
+      if (n.leaf && n.point.cell.nextD.p !== 0) {
+        nonZeroNewP.push(n.point.cell)
+      }
+
+      return false;
+    }
+    function nonZeroNewPCells() {
+      nonZeroNewP.length = 0;
+      quadtree.visit_lookForNonZeroNewP();
+      return nonZeroNewP;
+    }
+
+
+    var updateNeeders = [];
+    function lookForNeedsUpdate(n, x1, y1, x2, y2) {
+      if (n.leaf && n.point.cell.needsUpdate) {
+        updateNeeders.push(n.point.cell)
+      }
+
+      return false;
+    }
+    function cellsThatNeedUpdate() {
+      updateNeeders.length = 0;
+      quadtree.visit_lookForNeedsUpdate();
+      return updateNeeders;
+    }
+
+    /*
     // These are here so that addCellFromNode can be defined outside of 
     // filterCells, which results in about 1/3 of the ticks.
     var filtered = [];
-    var currentFilterFunction;
+    // var currentFilterFunction;
 
-    function filterCells(shouldInclude) {
+    function filterCells(filterFn) {
       filtered.length = 0;
-      currentFilterFunction = shouldInclude;
-      quadtree.visit(addCellFromNode);
+      quadtree['visit_' + ]();
       return filtered;
     }
 
@@ -115,6 +186,11 @@ function createCellMapmaker() {
         filtered.push(n.point.cell);
       }
     }
+    */
+
+
+
+
 
     function removeCell(coords) {
       if (coordsAreWithinBounds(coords)) {
@@ -138,14 +214,17 @@ function createCellMapmaker() {
       return [coords[0], coords[1] - 1];
     }
 
+    var pointCount;
     function pointsUsedForStorage() {
-      var pointCount = 0;
-      quadtree.visit(function countPoint(n, x1, y1, x2, y2) {
-        if (n.leaf) {
-          pointCount += 1;
-        }
-      });
+      pointCount = 0;
+      quadtree.visit_countPoint();
       return pointCount;
+    }
+
+    function countPoint(n, x1, y1, x2, y2) {
+      if (n.leaf) {
+        pointCount += 1;
+      }
     }
 
     return {
@@ -154,7 +233,9 @@ function createCellMapmaker() {
       setCells: setCells,
       getNeighbors: getNeighbors,
       interestingCells: interestingCells,
-      filterCells: filterCells,
+      // filterCells: filterCells,
+      nonZeroNewPCells: nonZeroNewPCells,
+      cellsThatNeedUpdate: cellsThatNeedUpdate,
       removeCell: removeCell,
       plusX: plusX,
       plusY: plusY,
