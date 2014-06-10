@@ -119,9 +119,12 @@ suite('Null-default map', function emptyMapSuite() {
 
   test('interestingCells should return only cells that don\'t match the default',
     function testInterestingCells() {
-      assert.deepEqual(
-        maps.nullMap.interestingCells(), 
-        [cells.a, cells.e, cells.c, cells.d, cells.b]
+      var interesting = maps.nullMap.interestingCells();
+      assert.equal(interesting.length, 5);
+      [cells.a, cells.e, cells.c, cells.d, cells.b].forEach(
+        function checkForCell(cell) {
+          assert.ok(_.find(interesting, cell));
+        }
       );
     }
   );
