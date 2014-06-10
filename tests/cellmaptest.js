@@ -67,7 +67,7 @@ var overlaidCells = {
   }
 };    
 
-suite('Null-default map', function emptyMapSuite() {
+suite('Null-default map creation', function emptyMapCreationSuite() {
   test('A null-default map should be created', function testMakingNullMap() {
     maps.nullMap = cellmapmaker.createMap({
       size: [1000, 1000]
@@ -75,6 +75,14 @@ suite('Null-default map', function emptyMapSuite() {
 
     assert.equal(typeof maps.nullMap, 'object');
     assert.equal(maps.nullMap.createDefaultCell().d, null);
+  });
+});
+
+suite('Null-default map', function emptyMapSuite() {
+  before(function makeNullMap() {
+    maps.nullMap = cellmapmaker.createMap({
+      size: [1000, 1000]
+    });
   });
 
   test('getCell should return a cell with null data if no points were added', 
