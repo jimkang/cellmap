@@ -1,6 +1,12 @@
 var assert = require('assert');
-var cellmapmaker = require('../cellmapmaker');
 var _ = require('lodash');
+
+if (_.contains(process.argv, '--use-hashmap')) {
+  var cellmapmaker = require('../hashcellmapmaker');
+}
+else {
+  var cellmapmaker = require('../cellmapmaker');  
+}
 
 var maps = {};
 var cells = {
@@ -131,12 +137,13 @@ suite('Null-default map', function emptyMapSuite() {
 
   test('filterCells should return cells with p of at least 0.5 only', 
     function testFilterCells() {
-      assert.deepEqual(
-        maps.nullMap.filterCells(function gteHalf(cell) {
-          return cell.d.p >= 0.5;
-        }),
-        [cells.e, cells.d, cells.b]
-      )
+      var filtered = maps.nullMap.filterCells(function gteHalf(cell) {
+        return cell.d.p >= 0.5;
+      });
+      assert.equal(filtered.length, 3);
+      [cells.e, cells.d, cells.b].forEach(function checkForCell(cell) {
+        assert.ok(_.find(filtered, cell));
+      });
     }
   );
 });
@@ -398,7 +405,7 @@ suite('Cell X default map', function cellXMapSuite() {
     }
   );
 
-  test('Verify that setting cells to the default cell data clears the quadtree',
+  test('Verify that setting cells to the default cell data clears the internal map',
     function testSetCellsToDefault() {
       maps.defaultMap.setCells([
         {
