@@ -13,3 +13,5 @@ test-quadtree:
 
 test-hashmap:
 	mocha --ui tdd -R spec tests/cellmaptest.js --use-hashmap
+
+test: test-quadtree test-hashmap

@@ -1,11 +1,10 @@
 {
   "name": "cellmap",
-  "version": "0.6.1",
+  "version": "0.7.1",
   "description": "A quadtree-based cell map that tracks cell neighbors. For use with cellular automata.",
-  "main": "cellmapmaker.js",
+  "main": "hashcellmapmaker.js",
   "scripts": {
-    "test": "make test-quadtree",
-    "dtest": "mocha debug --ui tdd -R spec tests/cellmaptest.js"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
