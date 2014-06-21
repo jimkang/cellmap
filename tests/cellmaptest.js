@@ -80,7 +80,7 @@ suite('Null-default map creation', function emptyMapCreationSuite() {
     });
 
     assert.equal(typeof maps.nullMap, 'object');
-    assert.equal(maps.nullMap.createDefaultCell().d, null);
+    assert.equal(maps.nullMap.createDefaultCell([400, 100]).d, null);
   });
 });
 

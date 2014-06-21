@@ -7,17 +7,16 @@ function createCellMapmaker() {
     var map = {};
 
     if (!opts.createDefaultCell) {
-      opts.createDefaultCell = function createNullDataCell(coords) {
+      opts.createDefaultCell = function createNullDataCell(theCoords) {
         return {
           d: null,
-          coords: _.cloneDeep(coords)
+          coords: [theCoords[0], theCoords[1]]
         };
       };
     }    
 
     function getCell(coords) {
       var cell = null;
-      debugger;
       if (coordsAreWithinBounds(coords)) {
         cell = map[coords.toString()];
       

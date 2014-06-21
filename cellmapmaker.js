@@ -13,10 +13,10 @@ function createCellMapmaker() {
     var targetCoords;
 
     if (!opts.createDefaultCell) {
-      opts.createDefaultCell = function createNullDataCell(coords) {
+      opts.createDefaultCell = function createNullDataCell(theCoords) {
         return {
           d: null,
-          coords: _.cloneDeep(coords)
+          coords: [theCoords[0], theCoords[1]]
         };
       };
     }
