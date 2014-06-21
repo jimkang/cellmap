@@ -1,7 +1,7 @@
 function createCellMapmaker() {
   if (typeof require === 'function') {
-    var d3 = require('./d3-adapted/d3-jr');
-    var _ = require('lodash');
+    d3 = require('./d3-adapted/d3-jr');
+    _ = require('lodash');
   }
 
   function createMap(opts) {

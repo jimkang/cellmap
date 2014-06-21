@@ -1,6 +1,6 @@
 function createCellMapmaker() {
   if (typeof require === 'function') {
-    var _ = require('lodash');
+    _ = require('lodash');
   }
 
   function createMap(opts) {

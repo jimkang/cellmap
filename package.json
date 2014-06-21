@@ -1,6 +1,6 @@
 {
   "name": "cellmap",
-  "version": "0.7.2",
+  "version": "0.8.2",
   "description": "A quadtree-based cell map that tracks cell neighbors. For use with cellular automata.",
   "main": "hashcellmapmaker.js",
   "scripts": {
