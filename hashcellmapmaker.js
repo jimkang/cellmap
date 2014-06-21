@@ -119,4 +119,7 @@ function createCellMapmaker() {
   };
 }
 
-module.exports = createCellMapmaker();
+if (typeof module === 'object' && typeof module.exports === 'object') {
+  module.exports = createCellMapmaker();
+}
+
