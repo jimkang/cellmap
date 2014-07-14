@@ -150,6 +150,7 @@ function createCellMapmaker() {
 
     return {
       getCell: getCell,
+      coordsAreWithinBounds: coordsAreWithinBounds,
       setCell: setCell,
       setCells: setCells,
       getNeighbors: getNeighbors,

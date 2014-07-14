@@ -192,7 +192,7 @@ suite('Cell X default map', function cellXMapSuite() {
   );
 
   test('setCell should add cells that can be got with getCell', 
-    function testsetCellGetCell() {
+    function testSetCellGetCell() {
       _.each(cells, function testAddingOneCell(cell) {
         maps.defaultMap.setCell(cell, cell.coords);
         assert.deepEqual(maps.defaultMap.getCell(cell.coords), cell);
@@ -254,6 +254,22 @@ suite('Cell X default map', function cellXMapSuite() {
       assert.equal(maps.defaultMap.getCell([1001, 0]), null);
       assert.equal(maps.defaultMap.getCell([0, 1001]), null);
       assert.equal(maps.defaultMap.getCell([500, 100000]), null);
+    }
+  );
+
+  test('Verify that coordsAreWithinBounds works', 
+    function testCoordsAreWithinBounds() {
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([-1, 1]), false);
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([1, -1]), false);
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([1001, 0]), false);
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([0, 1001]), false);
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([500, 100000]), false);
+
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([0, 0]), true);
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([1000, 1000]), true);
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([233, 789]), true);
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([234, 789]), true);
+      assert.equal(maps.defaultMap.coordsAreWithinBounds([768, 384]), true);
     }
   );
 
